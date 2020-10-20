@@ -1,0 +1,98 @@
+---
+title: "SIW4 Part 1:Simulation Exercize"
+author: "Pratik Patil"
+date: "17/10/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r DataLoading, include=FALSE}
+## Loading Libraries
+library("data.table")
+library("ggplot2")
+```
+
+##Setting values
+
+```{r Stuff}
+set.seed(31) # set seed for reproducability
+lam <- 0.2 # lambda=0.2
+x <- 40 #samples=40
+sim <- 1000 #simulations=1000
+sim_exp <- replicate(sim, rexp(x, lam)) # simulate
+mean_exp <- apply(sim_exp, 2, mean) # calculate mean of exponentials
+```
+
+## Question 1
+Show where the distribution is centered at and compare it to the theoretical center of the distribution.
+
+```{r}
+ana_mean <- mean(mean_exp)
+ana_mean
+```
+
+```{r}
+# analytical mean
+th_mean <- 1/lam
+th_mean
+```
+
+```{r}
+# visualization
+hist(mean_exp, xlab = "mean", main = "Exponential Function Simulations")
+abline(v = ana_mean, col = "blue")
+abline(v = th_mean, col = "red")
+```
+
+The analytics mean is 4.993867 the theoretical mean 5. The center of distribution of averages of 40 exponentials is very close to the theoretical center of the distribution.
+
+## Question 2
+
+Show how variable it is and compare it to the theoretical variance of the distribution.. 
+
+```{r}
+# standard deviation of distribution
+stan_dev_dist <- sd(mean_exp)
+stan_dev_dist
+```
+
+```{r}
+# standard deviation from analytical expression
+stan_dev_th <- (1/lam)/sqrt(x)
+stan_dev_th
+```
+
+```{r}
+# variance of distribution
+var_dist <- stan_dev_dist^2
+var_dist
+```
+
+```{r}
+# variance from analytical expression
+var_th <- ((1/lam)*(1/sqrt(x)))^2
+var_th
+```
+
+Standard Deviation of the distribution is 0.7931608 with the theoretical SD calculated as 0.7905694. The Theoretical variance is calculated as ((1 / ??) * (1/???n))<sup>2</sup> = 0.625. The actual variance of the distribution is 0.6291041
+
+## Question 3
+Show that the distribution is approximately normal.
+
+```{r}
+xf <- seq(min(mean_exp), max(mean_exp), length=100)
+yf <- dnorm(xf, mean=1/lam, sd=(1/lam/sqrt(x)))
+hist(mean_exp,breaks=x,prob=T,col="red",xlab = "means",main="Density of means",ylab="density")
+lines(xf, yf, pch=22, col="orange", lty=5)
+```
+
+```{r}
+# compare the distribution of averages of 40 exponentials to a normal distribution
+qqnorm(mean_exp)
+qqline(mean_exp, col = 2)
+```
+
+Due to Due to the central limit theorem (CLT), the distribution of averages of 40 exponentials is very close to a normal distribution.
